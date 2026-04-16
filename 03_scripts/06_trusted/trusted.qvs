@@ -1,0 +1,115 @@
+﻿/******************************************************************
+    PROJETO: $(DocumentTitle())
+    ARQUIVO: trusted.qvs
+    DESCRIÇÃO: Carga TRUSTED com LOG externo
+    RESPONSÁVEL: Carlos da Costa
+    DATA: $(Now())
+    
+	DESCRIÇÃO GERAL:
+		- Limpeza básica
+		- Registra todas as etapas em LOG externo
+******************************************************************/
+
+/******************************************************************
+	1. LOG DE INÍCIO DO PROCESSAMENTO TRUSTED
+******************************************************************/
+CONCATENATE (LOG_RELOAD)
+LOAD
+    '$(vReloadId)'                      AS Reload_ID,
+    Timestamp(Now())                    AS Log_Timestamp,
+    'INFO'                              AS Log_Level,
+    'Início da carga TRUSTED' AS Log_Message
+AUTOGENERATE 1;
+
+/******************************************************************
+	2. INÍCIO DO PROCESSAMENTO TRUSTED
+******************************************************************/
+TRUSTED:
+LOAD
+	id,
+	data,
+	hora,
+    natureza_acidente,
+	bairro,
+	tipo_acidente,
+	auto,
+   	moto,
+   	ciclom,
+   	ciclista,
+   	pedestre,
+   	onibus,
+   	caminhao,
+   	viatura,
+   	outros,
+   	vitimas,
+   	vitimasfatais,
+   	tempo_clima,
+   	situacao_semaforo,
+   	sinalizacao,
+   	condicao_via,
+   	conservacao_via,
+   	situacao_placa,
+   	endereco, 
+    detalhe_endereco_acidente, 
+    complemento, 
+    endereco_cruzamento, 
+    referencia_cruzamento, 
+    descricao
+
+RESIDENT STAGE;
+
+STORE TRUSTED
+INTO $(vRoot)$(vRoot)$(vPathQvdTrusted)(qvd);
+
+/******************************************************************
+	3. CONTAGEM DE REGISTROS CARREGADOS EM TRUSTED
+******************************************************************/
+LET vQtdtrusted = NoOfRows('TRUSTED');
+
+/******************************************************************
+	4. LOG DE CARREGAMENTO E VALIDAÇÃO DO TRUSTED
+******************************************************************/
+CONCATENATE (LOG_RELOAD)
+LOAD
+    '$(vReloadId)'                                                   AS Reload_ID,
+    Timestamp(Now())                                                 AS Log_Timestamp,
+    'INFO' 														     AS Log_Level,
+    'TRUSTED carregado com ' & $(vQtdtrusted) & ' registros' AS Log_Message
+AUTOGENERATE 1;
+
+// Validação de qualidade
+IF $(vQtdtrusted) < $(vQtdRaw) THEN
+
+    CONCATENATE (LOG_RELOAD)
+    LOAD
+        '$(vReloadId)'                                                            AS Reload_ID,
+        Timestamp(Now())                                                          AS Log_Timestamp,
+        'WARNING'                                                                 AS Log_Level,
+        'TRUSTED possui menos registros que RAW. Verificar regras de tratamento.' AS Log_Message
+    AUTOGENERATE 1;
+
+ENDIF;
+
+/******************************************************************
+	5. LIMPEZA DA CAMADA STAGE
+******************************************************************/
+DROP TABLE STAGE;
+
+CONCATENATE (LOG_RELOAD)
+LOAD
+    '$(vReloadId)'                             AS Reload_ID,
+    Timestamp(Now())                           AS Log_Timestamp,
+    'INFO'                                     AS Log_Level,
+    'STAGE removida da memória' AS Log_Message
+AUTOGENERATE 1;
+
+/******************************************************************
+	6. TÉRMINO DO SCRIPT TRUSTED
+******************************************************************/
+CONCATENATE (LOG_RELOAD)
+LOAD
+    '$(vReloadId)'                             AS Reload_ID,
+    Timestamp(Now())                           AS Log_Timestamp,
+    'INFO'                                     AS Log_Level,
+    'Término do processamento TRUSTED' AS Log_Message
+AUTOGENERATE 1;
