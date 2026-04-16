@@ -1,0 +1,19 @@
+﻿/******************************************************************
+    PROJETO: $(DocumentTitle())
+    ARQUIVO: logs_table.qvs
+    DESCRIÇÃO: Inicialização da Tabela de logs
+    RESPONSÁVEL: Carlos da Costa
+    DATA: $(Now())
+    
+    DESCRIÇÃO GERAL:
+     - Estrutura única para armazenar todos os eventos do reload
+     - Essa tabela será persistida em arquivo .csv ao final do script
+******************************************************************/
+
+LOG_RELOAD:
+LOAD
+    '$(vReloadId)'     AS Reload_ID,
+    Timestamp(Now())   AS Log_Timestamp,
+    ''                 AS Log_Level,
+    ''                 AS Log_Message
+AUTOGENERATE 0;
