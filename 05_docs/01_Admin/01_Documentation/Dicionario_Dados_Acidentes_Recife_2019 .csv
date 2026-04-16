@@ -1,0 +1,42 @@
+_id,Numérico,Identificador único do acidente
+DATA,Texto,Data em que o acidente ocorreu
+hora,Texto,Hora em que o acidente ocorreu
+natureza_acidente,Texto,Tipo de ocorrência
+situacao,Texto,Situação do atendimento da ocorrência
+bairro,Texto,Bairro em que o acidente ocorreu
+endereco,Texto,Endereço em que o acidente ocorreu
+numero,Numérico,Número do acidente
+detalhe_endereco_acidente,Texto,Dtalhes do acidente
+complemento,Texto,Complemento do acidente
+endereco_cruzamento,Texto,Endereço do cruzamento do acidente
+numero_cruzamento,Numérico,Número do cruzamento do acidente
+referencia_cruzamento,Texto,Referência do cruzamento do acidente
+bairro_cruzamento,Texto,Bairro do cruzamento do acidente
+num_semaforo,Numérico,Número do semáforo do acidente
+sentido_via,Texto,Sentido da via (cidade ou subúrbio)
+tipo,Texto,Tipo do Acidente se foi com ou sem vitimas
+descricao,Texto,Descrição do acidente
+auto,Numérico,Quantidade de automoveis no acidente
+moto,Numérico,Quantidade de motocicletas no acidente
+ciclom,Numérico,Quantidade de ciclomno acidente
+ciclista,Numérico,Quantidade de ciclista no acidente
+pedestre,Numérico,Quantidade de pedestre no acidente
+onibus,Numérico,Quantidade de ônibusno acidente
+caminhao,Numérico,Quantidade de caminhão no acidente
+viatura,Numérico,Quantidade de viaturas no acidente
+outros,Numérico,Outros tipos de veículos
+vitimas,Numérico,Quantidade de vitimas não fatais
+vitimas_fatais,Numérico,Quantidade de vitimas fatais no acidente
+acidente_verificado,Texto,Verificação do acidente (verificado ou não vrificado)
+tempo_clima,Texto,"Situação do clima (bom, chuvoso e nublado)"
+situacao_semaforo,Texto,"Situação do semáforo (não existe, sem defeito, intermitente e com defeito)"
+sinalizacao,Texto,"Situação da sinalização (ilegível, incompleta, não existente e perfeito estado)"
+condicao_via,Texto,"Situação da via (seca, oleosa e molhada)"
+conservacao_via,Texto,"Situação da conservação da via (perfeito estado, mal conservada, ma iluminada e outos)"
+ponto_controle,Texto,Indica se o local possui ponto de fiscalização/controle de tráfego.
+situacao_placa,Texto,"Situação da sinalização vertical (placas visíveis, danificadas etc.)."
+velocidade_max_via,Texto,Limite de velocidade permitido na via (km/h).
+mao_direcao,Texto,"Tipo de direção da via (mão única, mão dupla)."
+divisao_via1,Texto,Tipo de divisão física da via (ex: canteiro central).
+divisao_via2,Texto,Informação adicional sobre estrutura de separação da via.
+divisao_via3,Texto,Informação adicional sobre estrutura de separação da via.
