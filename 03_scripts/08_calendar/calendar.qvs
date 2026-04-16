@@ -1,0 +1,64 @@
+﻿/******************************************************************
+    PROJETO: $(DocumentTitle())
+    ARQUIVO: calendar.qvs
+    DESCRIÇÃO: Calendário mestre 
+    RESPONSÁVEL: Carlos da Costa
+    DATA: $(Now())
+    
+	DESCRIÇÃO GERAL:
+		- Criar uma dimensão de tempo padronizada para 
+		- todo o modelo analítico
+		- Evita múltiplos calendários no modelo
+		- Garante consistência em filtros de data
+		- Melhora performance e governança		
+		- Calendário desacoplado da fato
+		- Campos derivados padronizados
+	
+	Observação:
+		- Todas as tabelas que possuírem campo de data devem
+		- se associar a este calendário via o campo Data.
+******************************************************************/
+
+/******************************************************************
+	1º DETERMINA INTERVALO MÍNIMO E MÁXIMO DE DATAS
+******************************************************************/
+CALENDARIO:
+LOAD
+     Min(data) AS MinDate,
+     Max(data) AS MaxDate
+RESIDENT FACT;
+
+/******************************************************************
+	2º CRIA VARIÁVEIS DE CONTROLE DO CALENDÁRIO
+******************************************************************/
+LET vMinDate = Num(Peek('MinDate', 0, 'DIM_CALENDARIO'));
+LET vMaxDate = Num(Peek('MaxDate', 0, 'DIM_CALENDARIO'));
+
+DROP TABLE CALENDARIO;
+
+/******************************************************************
+	3º GERA CALENDÁRIO CONTÍNUO
+******************************************************************/
+DIM_CALENDARIO:
+LOAD
+     TempDate AS data,
+     Date(TempDate, 'DD/MM/YYYY') AS DataFormatada,
+     Year(TempDate) AS Ano,
+     Month(TempDate) AS Mes,
+     MonthName(TempDate) AS AnoMesExtenso,
+     Date(MonthStart(TempDate), 'MMM/YYYY') AS AnoMes,
+     Ceil(Month(TempDate)/3)& 'º ' & 'Trimestre' AS Trimestre,
+     Week(TempDate) AS Semana,
+     WeekDay(TempDate) AS DiaSemanaNome,
+     Day(TempDate) AS DiaMes,
+     WeekDay(TempDate) AS DiaSemana,
+     If(WeekDay(TempDate) >= 5, 'Fim de Semana', 'Dia Útil') AS TipoDia,
+     MonthStart(TempDate) AS InicioMes,
+     MonthEnd(TempDate) AS FimMes,
+     WeekStart(TempDate) AS InicioSemana,
+     WeekEnd(TempDate) AS FimSemana;
+
+LOAD 
+     $(vMinDate) + IterNo() - 1 AS TempDate
+AUTOGENERATE 1
+WHILE $(vMinDate) + IterNo() - 1 <= $(vMaxDate);
