@@ -1,0 +1,43 @@
+﻿/******************************************************************
+    PROJETO: $(DocumentTitle())
+    ARQUIVO: time.qvs
+    DESCRIÇÃO: Carga FACT com LOG externo
+    RESPONSÁVEL: Carlos da Costa
+    DATA: $(Now())
+    
+	DESCRIÇÃO GERAL:
+		- Criar uma dimensão de tempo para análise por hora/minuto,
+		- padronizando faixas horárias e turnos.
+	    - Dimensão desacoplada da tabela fato
+		- Padronização de formatos de hora
+		- Regras simples e explícitas
+	
+	Observação:
+		- Todas as tabelas que possuírem campo de hora devem
+		- se associar a esta dimensão via o campo hora.
+******************************************************************/
+
+/******************************************************************
+	1º GERA HORA MESTRE (24 HORAS)
+******************************************************************/
+DIM_TEMPO:
+LOAD
+    hora,
+    Hour(hora) AS hora_num,
+    Minute(hora) AS minuto,
+    Second(hora) AS segundo,
+
+/******************************************************************
+	2º FAIXA HORÁRIA
+******************************************************************/
+    Floor(Hour(hora)/1)*1 & '-' & (Floor(Hour(hora)/1)+1) AS faixa_horaria,
+
+/******************************************************************
+	3º PERÍODO DO DIA
+******************************************************************/    
+    IF(Hour(hora) >= 6  AND Hour(hora) < 12, 'Manhã',
+    IF(Hour(hora) >= 12 AND Hour(hora) < 18, 'Tarde',
+    IF(Hour(hora) >= 18 AND Hour(hora) < 24, 'Noite',
+    'Madrugada'))) AS periodo_dia
+
+RESIDENT FACT;
