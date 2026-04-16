@@ -1,0 +1,137 @@
+﻿/******************************************************************
+    PROJETO: $(DocumentTitle())
+    ARQUIVO: raw.qvs
+    DESCRIÇÃO: Carga RAW com LOG externo
+    RESPONSÁVEL: Carlos da Costa
+    DATA: $(Now())
+    
+    DESCRIÇÃO GERAL:
+     - Carregar dados brutos (RAW)
+     - Registra todas as etapas em LOG externo
+******************************************************************/
+
+/******************************************************************
+	1. LOG DE INÍCIO DO PROCESSO
+******************************************************************/
+CONCATENATE (LOG_RELOAD)
+LOAD
+    '$(vReloadId)'                 AS Reload_ID,
+    Timestamp(Now())               AS Log_Timestamp,
+    'INFO'                         AS Log_Level,
+    'Início do processo de reload' AS Log_Message
+AUTOGENERATE 1;
+
+
+/******************************************************************
+	2. LOG DE INÍCIO DO CARREGAMENTO RAW
+******************************************************************/
+CONCATENATE (LOG_RELOAD)
+LOAD
+    '$(vReloadId)'                  AS Reload_ID,
+    Timestamp(Now())                AS Log_Timestamp,
+    'INFO'                          AS Log_Level,
+    'Início da carga RAW' AS Log_Message
+AUTOGENERATE 1;
+
+/******************************************************************
+	3. CAMADA RAW
+	
+	- Carga integral do CSV
+	- Nenhuma transformação aplicada
+******************************************************************/
+RAW:
+LOAD _id, 
+     DATA, 
+     hora, 
+     natureza_acidente, 
+     situacao, 
+     bairro, 
+     endereco, 
+     numero, 
+     detalhe_endereco_acidente, 
+     complemento, 
+     endereco_cruzamento, 
+     numero_cruzamento, 
+     referencia_cruzamento, 
+     bairro_cruzamento, 
+     num_semaforo, 
+     sentido_via, 
+     tipo, 
+     descricao, 
+     auto, 
+     moto, 
+     ciclom, 
+     ciclista, 
+     pedestre, 
+     onibus, 
+     caminhao, 
+     viatura, 
+     outros, 
+     vitimas, 
+     vitimasfatais, 
+     acidente_verificado, 
+     tempo_clima, 
+     situacao_semaforo, 
+     sinalizacao, 
+     condicao_via, 
+     conservacao_via, 
+     ponto_controle, 
+     situacao_placa, 
+     velocidade_max_via, 
+     mao_direcao, 
+     divisao_via1, 
+     divisao_via2, 
+     divisao_via3
+FROM
+$(vRoot)$(vRoot)$(vPathDataRaw)
+(txt, utf8, embedded labels, delimiter is ',', msq);
+
+STORE RAW
+INTO $(vRoot)$(vRoot)$(vPathQvdRaw)(qvd);
+
+
+/******************************************************************
+	4. CONTAGEM DE REGISTROS CARREGADOS EM RAW
+******************************************************************/
+LET vQtdRaw = NoOfRows('RAW');
+
+/******************************************************************
+	5. LOG DE CARREGAMENTO E VALIDAÇÃO DO RAW
+******************************************************************/
+CONCATENATE (LOG_RELOAD)
+LOAD
+    '$(vReloadId)'                                             AS Reload_ID,
+    Timestamp(Now())                                           AS Log_Timestamp,
+    'INFO'                                                     AS Log_Level,
+    'RAW carregado com ' & $(vQtdRaw) & ' registros' AS Log_Message
+AUTOGENERATE 1;
+
+// Validação crítica
+IF $(vQtdRaw) = 0 THEN
+
+    CONCATENATE (LOG_RELOAD)
+    LOAD
+        '$(vReloadId)'                                     AS Reload_ID,
+        Timestamp(Now())                                   AS Log_Timestamp,
+        'ERROR'                                            AS Log_Level,
+        'RAW sem registros. Abortando processo.' AS Log_Message
+    AUTOGENERATE 1;
+
+    STORE LOG_RELOAD
+    INTO $(vRoot)$(vRoot)$(vPathLog)
+    (txt, delimiter is ',');
+
+    EXIT SCRIPT;
+
+ENDIF;
+
+/******************************************************************
+	6. LOG DE TÉRMINO DO PROCESSAMENTO RAW
+******************************************************************/
+CONCATENATE (LOG_RELOAD)
+LOAD
+    '$(vReloadId)'                           AS Reload_ID,
+    Timestamp(Now())                         AS Log_Timestamp,
+    'INFO'                                   AS Log_Level,
+    'Término do processamento RAW' AS Log_Message
+AUTOGENERATE 1;
