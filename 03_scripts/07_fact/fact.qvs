@@ -1,0 +1,328 @@
+﻿/******************************************************************
+    PROJETO: $(DocumentTitle())
+    ARQUIVO: fact.qvs
+    DESCRIÇÃO: Carga FACT com LOG externo
+    RESPONSÁVEL: Carlos da Costa
+    DATA: $(Now())
+    
+	DESCRIÇÃO GERAL:
+		- Dataset final para análise e dashboards
+		- Dados consolidados e limpos
+		- Performance otimizada
+		- Registra todas as etapas em LOG externo
+******************************************************************/
+
+/******************************************************************
+	1. LOG DE INÍCIO DO CARREGAMENTO FACT
+******************************************************************/
+CONCATENATE (LOG_RELOAD)
+LOAD
+    '$(vReloadId)'                   AS Reload_ID,
+    Timestamp(Now())                 AS Log_Timestamp,
+    'INFO'                           AS Log_Level,
+    'Início do processamento FACT' AS Log_Message
+AUTOGENERATE 1;
+
+/******************************************************************
+	2. LOG DE INÍCIO DO CARREGAMENTO DIM_BAIRRO
+******************************************************************/
+CONCATENATE (LOG_RELOAD)
+LOAD
+    '$(vReloadId)'               AS Reload_ID,
+    Timestamp(Now())             AS Log_Timestamp,
+    'INFO'                       AS Log_Level,
+    'Início da carga DIM_BAIRRO' AS Log_Message
+AUTOGENERATE 1;
+
+/******************************************************************
+	3. DIM_BAIRRO
+	OBJETIVO:
+		- Normalizar o bairro
+		- Evitar repetição textual no fato
+******************************************************************/
+DIM_BAIRRO:
+LOAD DISTINCT
+    AutoNumber(bairro) AS sk_bairro,
+    bairro,
+    endereco, 
+    detalhe_endereco_acidente, 
+    complemento, 
+    endereco_cruzamento, 
+    referencia_cruzamento, 
+    descricao
+    
+RESIDENT TRUSTED;
+
+/******************************************************************
+	4. LOG DE TÉRMINO DO CARREGAMENTO DIM_BAIRRO
+******************************************************************/
+CONCATENATE (LOG_RELOAD)
+LOAD
+    '$(vReloadId)'         AS Reload_ID,
+    Timestamp(Now())       AS Log_Timestamp,
+    'INFO'                 AS Log_Level,
+    'DIM_BAIRRO carregado' AS Log_Message
+AUTOGENERATE 1;
+
+/******************************************************************
+	5. LOG DE INÍCIO DO CARREGAMENTO DIM_NATUREZA
+******************************************************************/
+CONCATENATE (LOG_RELOAD)
+LOAD
+    '$(vReloadId)'                 AS Reload_ID,
+    Timestamp(Now())               AS Log_Timestamp,
+    'INFO'                         AS Log_Level,
+    'Início da carga DIM_NATUREZA' AS Log_Message
+AUTOGENERATE 1;
+
+/******************************************************************
+	6. DIM_NATUREZA
+	OBJETIVO:
+		- Domínio controlado da natureza do acidente
+		- Facilitar filtros e KPIs
+******************************************************************/
+DIM_NATUREZA:
+LOAD DISTINCT
+    AutoNumber(natureza_acidente) AS sk_natureza,
+    natureza_acidente
+    
+RESIDENT TRUSTED;
+
+/******************************************************************
+	7. LOG DE TÉRMINO DO CARREGAMENTO DIM_NATUREZA
+******************************************************************/
+CONCATENATE (LOG_RELOAD)
+LOAD
+    '$(vReloadId)'           AS Reload_ID,
+    Timestamp(Now())         AS Log_Timestamp,
+    'INFO'                   AS Log_Level,
+    'DIM_NATUREZA carregado' AS Log_Message
+AUTOGENERATE 1;
+
+/******************************************************************
+	8. LOG DE INÍCIO DO CARREGAMENTO DIM_CONDICOES_VIA
+******************************************************************/
+CONCATENATE (LOG_RELOAD)
+LOAD
+    '$(vReloadId)'                      AS Reload_ID,
+    Timestamp(Now())                    AS Log_Timestamp,
+    'INFO'                              AS Log_Level,
+    'Início da carga DIM_CONDICOES_VIA' AS Log_Message
+AUTOGENERATE 1;
+
+/******************************************************************
+	9. DIM_CONDICOES_VIA
+	OBJETIVO:
+		- Agrupar atributos de contexto do acidente
+		- Reduzir colunas textuais no fato
+******************************************************************/
+DIM_CONDICOES_VIA:
+LOAD DISTINCT
+    AutoNumber(
+        tempo_clima & '|' &
+        situacao_semaforo & '|' &
+        sinalizacao & '|' &
+        condicao_via & '|' &
+        conservacao_via & '|' &
+        situacao_placa
+    ) AS sk_condicoes_via,
+
+    tempo_clima,
+    situacao_semaforo,
+    sinalizacao,
+    condicao_via,
+    conservacao_via,
+    situacao_placa
+    
+RESIDENT TRUSTED;
+
+/******************************************************************
+	10. LOG DE TÉRMINO DO CARREGAMENTO DIM_CONDICOES_VIA
+******************************************************************/
+CONCATENATE (LOG_RELOAD)
+LOAD
+    '$(vReloadId)'                AS Reload_ID,
+    Timestamp(Now())              AS Log_Timestamp,
+    'INFO'                        AS Log_Level,
+    'DIM_CONDICOES_VIA carregado' AS Log_Message
+AUTOGENERATE 1;
+
+/******************************************************************
+	11. LOG DE INÍCIO DO CARREGAMENTO DIM_VEÍCULOS
+******************************************************************/
+CONCATENATE (LOG_RELOAD)
+LOAD
+    '$(vReloadId)'                AS Reload_ID,
+    Timestamp(Now())              AS Log_Timestamp,
+    'INFO'                        AS Log_Level,
+    'Início da carga DIM_VEÍCULOS' AS Log_Message
+AUTOGENERATE 1;
+
+/******************************************************************
+	12. DIM_VEÍCULOS
+	OBJETIVO:
+		- Agrupar atributos de contexto do acidente
+		- Reduzir colunas textuais no fato
+******************************************************************/
+
+DIM_VEICULOS:
+CrossTable (
+    tipo_veiculo,
+    quantidade
+)
+LOAD
+    id AS id_acidente,
+    auto,
+    moto,
+    ciclom,
+    ciclista,
+    pedestre,
+    onibus,
+    caminhao,
+    viatura,
+    outros
+RESIDENT TRUSTED
+WHERE
+    auto > 0 OR
+    moto > 0 OR
+    ciclom > 0 OR
+    ciclista > 0 OR
+    pedestre > 0 OR
+    onibus > 0 OR
+    caminhao > 0 OR
+    viatura > 0 OR
+    outros > 0;
+
+DIM_VEICULOS:
+LOAD DISTINCT
+    AutoNumber(tipo_veiculo) AS sk_tipo_veiculo,
+    tipo_veiculo
+    
+RESIDENT DIM_VEICULOS;
+
+/******************************************************************
+	13. LOG DE TÉRMINIO DO CARREGAMENTO DIM_VEÍCULOS
+******************************************************************/
+CONCATENATE (LOG_RELOAD)
+LOAD
+    '$(vReloadId)'                AS Reload_ID,
+    Timestamp(Now())              AS Log_Timestamp,
+    'INFO'                        AS Log_Level,
+    'DIM_VEICULOS carregado' AS Log_Message
+AUTOGENERATE 1;
+
+/******************************************************************
+	14. LOG DE INÍCIO DO CARREGAMENTO FACT_ACIDENTES
+******************************************************************/
+CONCATENATE (LOG_RELOAD)
+LOAD
+    '$(vReloadId)'                   AS Reload_ID,
+    Timestamp(Now())                 AS Log_Timestamp,
+    'INFO'                           AS Log_Level,
+    'Início da carga FACT' AS Log_Message
+AUTOGENERATE 1;
+
+/******************************************************************
+	15. FACT
+	OBJETIVO:
+		- Armazenar métricas do acidente
+		- Conectar todas as dimensões
+******************************************************************/
+FACT:
+LOAD
+    id AS id_acidente,
+    data,
+    hora,
+    AutoNumber(bairro) AS sk_bairro,
+    AutoNumber(natureza_acidente) AS sk_natureza,
+    AutoNumber(
+        tempo_clima & '|' &
+        situacao_semaforo & '|' &
+        sinalizacao & '|' &
+        condicao_via & '|' &
+        conservacao_via & '|' &
+        situacao_placa
+    ) AS sk_condicoes_via,
+
+    vitimas,
+    vitimasfatais,
+    tipo_acidente
+
+RESIDENT TRUSTED;
+
+STORE FACT
+INTO $(vRoot)$(vRoot)$(vPathQvdFact)(qvd);
+
+/******************************************************************
+	16. LOG DE TÉRMINO DO CARREGAMENTO FACT
+******************************************************************/
+CONCATENATE (LOG_RELOAD)
+LOAD
+    '$(vReloadId)'             AS Reload_ID,
+    Timestamp(Now())           AS Log_Timestamp,
+    'INFO'                     AS Log_Level,
+    'FACT carregado' AS Log_Message
+AUTOGENERATE 1;
+
+/******************************************************************
+	17. CONTAGEM DE REGISTROS CARREGADOS EM FACT
+******************************************************************/
+LET vQtdfact = NoOfRows('FACT');
+
+/******************************************************************
+	18. LOG DE CARREGAMENTO E VALIDAÇÃO DO FACT
+******************************************************************/
+CONCATENATE (LOG_RELOAD)
+LOAD
+    '$(vReloadId)'                                               AS Reload_ID,
+    Timestamp(Now())                                             AS Log_Timestamp,
+    'INFO' 														 AS Log_Level,
+    'FACT carregado com ' & $(vQtdfact) & ' registros' AS Log_Message
+AUTOGENERATE 1;
+
+// Validação de qualidade
+IF $(vQtdfact) < $(vQtdRaw) THEN
+
+    CONCATENATE (LOG_RELOAD)
+    LOAD
+        '$(vReloadId)'                                                            AS Reload_ID,
+        Timestamp(Now())                                                          AS Log_Timestamp,
+        'WARNING'                                                                 AS Log_Level,
+        'FACT possui menos registros que RAW. Verificar regras de tratamento.' AS Log_Message
+    AUTOGENERATE 1;
+
+ENDIF;
+
+/******************************************************************
+	19. LIMPEZA DA CAMADA TRUSTED
+******************************************************************/
+DROP TABLE TRUSTED;
+
+CONCATENATE (LOG_RELOAD)
+LOAD
+    '$(vReloadId)'                                 AS Reload_ID,
+    Timestamp(Now())                               AS Log_Timestamp,
+    'INFO'                                         AS Log_Level,
+    'TRUSTED removida da memória' AS Log_Message
+AUTOGENERATE 1;
+
+/******************************************************************
+	20. TÉRMINO DA CARGA FACT
+******************************************************************/
+CONCATENATE (LOG_RELOAD)
+LOAD
+    '$(vReloadId)'                                   AS Reload_ID,
+    Timestamp(Now())                                 AS Log_Timestamp,
+    'INFO'                                           AS Log_Level,
+    'Carga da FACT finalizada com sucesso' AS Log_Message
+AUTOGENERATE 1;
+
+/******************************************************************
+	21. PERSISTÊNCIA DO LOG EXTERNO
+	OBJETIVO:
+		- Persistência de logs
+		- O arquivo é sobrescrito a cada reload
+******************************************************************/
+STORE LOG_RELOAD
+INTO $(vRoot)$(vRoot)$(vPathLog)
+(txt, delimiter is ',');
