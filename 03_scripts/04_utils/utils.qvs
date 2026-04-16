@@ -1,0 +1,153 @@
+﻿/******************************************************************
+    PROJETO: $(DocumentTitle())
+    ARQUIVO: utils.qvs
+    DESCRIÇÃO: Script utlilitário
+    RESPONSÁVEL: Carlos da Costa
+    DATA: $(Now())
+******************************************************************/
+
+SET vId = "_id";
+SET vISODate = "Date(Date#(Left($1,10),'YYYY-MM-DD'))";
+SET vHoraTratada = "
+If(
+    Len(Trim($1)) = 0 OR IsNull($1),
+    Null(),
+    Time(Time#($1,'hh:mm:ss'))
+)";
+SET vNaturezaAcidente = "
+	If(
+	    Len(Trim($1)) = 0 OR IsNull($1),
+	    'Não informado',
+	    Upper(Left(Trim($1), 1)) &
+	    Lower(Mid(Trim($1), 2))
+)";
+SET vBairro = "
+    Capitalize(
+	    Lower(
+	        If(
+	            Len(Trim($1)) = 0 OR IsNull($1),
+	            'Não informado',
+	            $1
+	        )
+	    )
+)";
+SET vTempoClima = "
+     If(
+        Len(Trim($1)) = 0 OR IsNull($1),
+        'Não informado',
+        $1
+)";
+SET vSituacao_semaforo = "
+     If(
+        Len(Trim($1)) = 0 OR IsNull($1),
+        'Não informado',
+        $1
+)";
+SET vTipoAcidente = "
+	If(
+	    Len(Trim($1)) = 0 OR IsNull($1),
+	    'Não informado',
+	    Upper(Left(Trim($1), 1)) &
+	    Lower(Mid(Trim($1), 2))
+)";
+SET vSinalizacao = "
+     If(
+        Len(Trim($1)) = 0 OR IsNull($1),
+        'Não informado',
+        $1
+)";
+SET vAuto = "Num(Alt($1, 0))";
+SET vMoto = "Num(Alt($1, 0))";
+SET vCiclom = "Num(Alt($1, 0))";
+SET vCiclista = "Num(Alt($1, 0))";
+SET vPedestre = "Num(Alt($1, 0))";
+SET vOnibus = "Num(Alt($1, 0))";
+SET vCaminhao = "Num(Alt($1, 0))";
+SET vViatura = "Num(Alt($1, 0))";
+SET vOutros = "Num(Alt($1, 0))";
+SET vVitimas = "Num(Alt($1, 0))";
+SET vVitimasfatais = "Num(Alt($1, 0))";
+SET vCondicao_via = "
+If(
+        Len(Trim($1)) = 0 OR IsNull($1),
+        'Não informado',
+        $1
+)";
+SET vConservacao_via = "
+If(
+        Len(Trim($1)) = 0 OR IsNull($1),
+        'Não informado',
+        $1
+)";
+SET vSituacao_placa = "
+If(
+        Len(Trim($1)) = 0 OR IsNull($1),
+        'Não informado',
+        $1
+)";
+SET vVelocidade_max_via = "
+If(
+        Len(Trim($1)) = 0 OR IsNull($1),
+        'Não informado',
+        $1
+)";
+SET vEndereco = "
+    Capitalize(
+	    Lower(
+	        If(
+	            Len(Trim($1)) = 0 OR IsNull($1),
+	            'Não informado',
+	            $1
+	        )
+	    )
+)";
+SET vDetalhe_endereco_acidente = "
+    Capitalize(
+	    Lower(
+	        If(
+	            Len(Trim($1)) = 0 OR IsNull($1),
+	            'Não informado',
+	            $1
+	        )
+	    )
+)";
+SET vComplemento = "
+    Capitalize(
+	    Lower(
+	        If(
+	            Len(Trim($1)) = 0 OR IsNull($1),
+	            'Não informado',
+	            $1
+	        )
+	    )
+)";
+SET vEndereco_cruzamento = "
+    Capitalize(
+	    Lower(
+	        If(
+	            Len(Trim($1)) = 0 OR IsNull($1),
+	            'Não informado',
+	            $1
+	        )
+	    )
+)";
+SET vReferencia_cruzamento = "
+    Capitalize(
+	    Lower(
+	        If(
+	            Len(Trim($1)) = 0 OR IsNull($1),
+	            'Não informado',
+	            $1
+	        )
+	    )
+)";
+SET vDescricao = "
+    Capitalize(
+	    Lower(
+	        If(
+	            Len(Trim($1)) = 0 OR IsNull($1),
+	            'Não informado',
+	            $1
+	        )
+	    )
+)";
