@@ -1,0 +1,118 @@
+﻿/******************************************************************
+    PROJETO: $(DocumentTitle())
+    ARQUIVO: stage.qvs
+    DESCRIÇÃO: Carga STAGE com LOG externo
+    RESPONSÁVEL: Carlos da Costa
+    DATA: $(Now())
+    
+	DESCRIÇÃO GERAL:
+		- Limpeza básica
+		- Registra todas as etapas em LOG externo
+******************************************************************/
+
+/******************************************************************
+	1. LOG DE INÍCIO DO PROCESSAMENTO STAGE
+******************************************************************/
+CONCATENATE (LOG_RELOAD)
+LOAD
+    '$(vReloadId)'                    AS Reload_ID,
+    Timestamp(Now())                  AS Log_Timestamp,
+    'INFO'                            AS Log_Level,
+    'Início da carga STAGE' AS Log_Message
+AUTOGENERATE 1;
+
+/******************************************************************
+	2. INÍCIO DO PROCESSAMENTO STAGE
+******************************************************************/
+STAGE:
+LOAD
+    $(vId(_id)) AS id,
+   	$(vISODate(DATA)) AS data,
+	$(vHoraTratada(hora)) AS hora,
+	$(vNaturezaAcidente(natureza_acidente)) AS natureza_acidente,
+	$(vBairro(bairro)) AS bairro,
+	$(vTempoClima(tempo_clima)) AS tempo_clima,
+	$(vSituacao_semaforo(situacao_semaforo)) AS situacao_semaforo,
+	$(vTipoAcidente(tipo)) AS tipo_acidente,
+	$(vSinalizacao(sinalizacao)) AS sinalizacao,
+   	$(vAuto(auto)) AS auto,
+   	$(vMoto(moto)) AS moto,
+   	$(vCiclom(ciclom)) AS ciclom,
+   	$(vCiclista(ciclista)) AS ciclista,
+   	$(vPedestre(pedestre)) AS pedestre,
+   	$(vOnibus(onibus)) AS onibus,
+   	$(vCaminhao(caminhao)) AS caminhao,
+   	$(vViatura(viatura)) AS viatura,
+   	$(vOutros(outros)) AS outros,
+   	$(vVitimas(vitimas)) AS vitimas,
+   	$(vVitimasfatais(vitimasfatais)) AS vitimasfatais,
+	$(vCondicao_via(condicao_via)) AS condicao_via,
+	$(vConservacao_via(conservacao_via)) AS conservacao_via,
+	$(vSituacao_placa(situacao_placa)) AS situacao_placa,
+ 	$(vVelocidade_max_via(velocidade_max_via)) AS velocidade_max_via,
+	$(vEndereco(endereco)) AS endereco,
+	$(vDetalhe_endereco_acidente(detalhe_endereco_acidente)) AS detalhe_endereco_acidente,
+ 	$(vComplemento(complemento)) AS complemento,
+	$(vEndereco_cruzamento(endereco_cruzamento)) AS endereco_cruzamento,
+	$(vReferencia_cruzamento(referencia_cruzamento)) AS referencia_cruzamento,
+	$(vDescricao(descricao)) AS descricao
+    
+RESIDENT RAW;
+
+STORE STAGE
+INTO $(vRoot)$(vRoot)$(vPathQvdStage) (qvd);
+
+/******************************************************************
+	3. LIMPEZA DA CAMADA RAW
+******************************************************************/
+DROP TABLE RAW;
+
+CONCATENATE (LOG_RELOAD)
+LOAD
+    '$(vReloadId)'                             AS Reload_ID,
+    Timestamp(Now())                           AS Log_Timestamp,
+    'INFO'                                     AS Log_Level,
+    'Tabela RAW removida da memória' AS Log_Message
+AUTOGENERATE 1;
+
+/******************************************************************
+	4. CONTAGEM DE REGISTROS CARREGADOS EM STAGE
+******************************************************************/
+LET vQtdStage = NoOfRows('STAGE');
+
+/******************************************************************
+	5. LOG DE CARREGAMENTO E VALIDAÇÃO DO STAGE
+******************************************************************/
+CONCATENATE (LOG_RELOAD)
+LOAD
+    '$(vReloadId)'                                                 AS Reload_ID,
+    Timestamp(Now())                                               AS Log_Timestamp,
+    'INFO' 														   AS Log_Level,
+    'STAGE carregado com ' & $(vQtdStage) & ' registros' AS Log_Message
+AUTOGENERATE 1;
+
+// Validação de qualidade
+IF $(vQtdStage) < $(vQtdRaw) THEN
+
+    CONCATENATE (LOG_RELOAD)
+    LOAD
+        '$(vReloadId)'                                                          AS Reload_ID,
+        Timestamp(Now())                                                        AS Log_Timestamp,
+        'WARNING'                                                               AS Log_Level,
+        'STAGE possui menos registros que RAW. Verificar regras de tratamento.' AS Log_Message
+    AUTOGENERATE 1;
+
+ENDIF;
+
+/******************************************************************
+	6. LOG DE TÉRMINO DO CARREGAMENTO STAGE
+******************************************************************/
+CONCATENATE (LOG_RELOAD)
+LOAD
+    '$(vReloadId)'                           AS Reload_ID,
+    Timestamp(Now())                         AS Log_Timestamp,
+    'INFO'                                   AS Log_Level,
+    'Término do processamento STAGE' AS Log_Message
+AUTOGENERATE 1;
+
+
