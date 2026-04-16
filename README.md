@@ -73,7 +73,7 @@ Antes da visualização, os dados passaram por etapas de:
 
 ---
 
-## 📌 Estrutura do Dashboard: 
+## 📌 Estrutura do Dashboard
 
 * Capa: visão geral do projeto e objetivos
 * Visão Geral: KPIs principais
@@ -87,3 +87,37 @@ Antes da visualização, os dados passaram por etapas de:
 
 ---
 
+## 📌 Imagens
+
+<table>
+  <tr>
+    <td><img src="https://github.com/jcarlossc/dashboard-qlikview--accidents/blob/main/07_images/capa.PNG" alt="Imagem Dashboard" width="200"/> </td>
+    <td><img src="https://github.com/jcarlossc/dashboard-qlikview--accidents/blob/main/07_images/geral.PNG" alt="Imagem Dashboard" width="200"/> </td>
+    <td><img src="https://github.com/jcarlossc/dashboard-qlikview--accidents/blob/main/07_images/datas.PNG" alt="Imagem Dashboard" width="200"/> </td>
+    <td><img src="https://github.com/jcarlossc/dashboard-qlikview--accidents/blob/main/07_images/horas.PNG" alt="Imagem Dashboard" width="200"/> </td>
+    <td><img src="https://github.com/jcarlossc/dashboard-qlikview--accidents/blob/main/07_images/veiculos.PNG" alt="Imagem Dashboard" width="200"/> </td>
+    <td><img src="https://github.com/jcarlossc/dashboard-qlikview--accidents/blob/main/07_images/vias.PNG" alt="Imagem Dashboard" width="200"/> </td>
+    <td><img src="https://github.com/jcarlossc/dashboard-qlikview--accidents/blob/main/07_images/sinalizacao.PNG" alt="Imagem Dashboard" width="200"/> </td>
+    <td><img src="https://github.com/jcarlossc/dashboard-qlikview--accidents/blob/main/07_images/tabela.PNG" alt="Imagem Dashboard" width="200"/> </td>
+  </tr>
+</table>
+
+---
+
+## 📌 Licença
+Este projeto está licenciado sob MIT License.
+
+---
+
+## 📌 Contato
+* Recife, PE - Brasil<br>
+* Telefone: +55 81 99712 9140<br>
+* Telegram: @jcarlossc<br>
+* Pypi: https://pypi.org/user/jcarlossc/<br>
+* Blogger linguagem R: [https://informaticus77-r.blogspot.com/](https://informaticus77-r.blogspot.com/)<br>
+* Blogger linguagem Python: [https://informaticus77-python.blogspot.com/](https://informaticus77-python.blogspot.com/)<br>
+* Email: jcarlossc1977@gmail.com<br>
+* LinkedIn: https://www.linkedin.com/in/carlos-da-costa-669252149/<br>
+* GitHub: https://github.com/jcarlossc<br>
+* Kaggle: https://www.kaggle.com/jcarlossc/  
+* Twitter/X: https://x.com/jcarlossc1977
