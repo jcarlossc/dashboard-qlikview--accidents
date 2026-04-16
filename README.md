@@ -12,7 +12,9 @@ Por meio de dashboards interativos desenvolvidos no QlikView, o projeto busca ap
 * Distribuição por tipo de acidente
 * Gravidade (com vítimas / sem vítimas)
 * Principais fatores associados às ocorrências
-* Entre outros
+* Situação das vias públicas
+* Situação dos semáforos e da sinalização
+* Clima
 
 O foco é transformar dados brutos em informação estratégica, de fácil compreensão para diferentes perfis de usuários.
 
@@ -31,3 +33,57 @@ O dashboard foi desenvolvido para atender principalmente:
 A interface prioriza clareza visual, navegação intuitiva e autonomia do usuário, mesmo para quem não possui conhecimento técnico em análise de dados.
 
 ---
+
+## 📌 KPIs Principais
+
+Os principais Indicadores-Chave de Desempenho (KPIs) apresentados no dashboard são:
+
+* Total de acidentes
+* Total de vítimas não fatais
+* Total de vítimas fatais
+* Total de acidentes sem vítimas
+* Taxa de acidentes com vítimas
+* Dia crítico
+* Faixa horária crítica
+* Total de veículos acidentados
+* Taxa de acidentes em via chuvosa
+* Taxa de sinalização inadequada
+* Entre outros
+
+Esses indicadores permitem uma visão geral e detalhada da situação, facilitando análises comparativas e identificação de pontos críticos.
+
+---
+
+## 📌 Fonte dos Dados
+
+Os dados utilizados neste projeto foram obtidos a partir de:
+
+Base de dados pública de acidentes de trânsito
+Registros oficiais disponibilizados por órgãos de trânsito
+Arquivos estruturados (CSV / QVD), tratados previamente no processo de carga
+
+Antes da visualização, os dados passaram por etapas de:
+
+* Limpeza
+* Padronização
+* Validação
+* Modelagem para análise no QlikView
+
+⚠️ Observação: Os dados são utilizados exclusivamente para fins analíticos e educacionais.
+
+---
+
+## 📌 Estrutura do Dashboard: 
+
+* Capa: visão geral do projeto e objetivos
+* Visão Geral: KPIs principais
+* Análise Temporal: evolução por mês/ano
+* Análise Temporal: evolução por hora
+* Análise por veículos: tipos de veículos
+* Análise por condição da via: condição, conservação e clima
+* Análise por condição da sinalização: sinalização e semáforo
+* Análise de endereços: tabela
+* Filtros Interativos: bairro, mês, trimestre e dia da semana
+
+---
+
